@@ -346,32 +346,33 @@
     
     
     <article class="index-post">
-        <a class="abstract-title" href="/2017/11/22/Discuz-任意文件删除/">
+        <a class="abstract-title" href="/2018/11/13/python-GUI开发环境配置/">
             
-                <span>Discuz＜=3.4任意文件删除漏洞</span>
+                <span>python-GUI开发环境配置</span>
         </a>
         <div class="abstract-content">
-            漏洞复现
-简介：该漏洞是在某一公众号上看到的，由于还是个萌新，所以想着复现一下加深印象，然后后期再看看大佬们的漏洞分析，复现需要环境，正好手头有一个discuz!x3.2的站，便拿来做个试验。
+            GUI开发环境配置
+简介：python平时使用的较多都是命令行模式的脚本，这次配置这个环境主要是想试试这个开发GUI的感觉，本文主要记录了pycharm+pyqt+pyinstall的组合的搭建，过程不难，也没踩坑，就写下来记录一下
 
 
-注册账号
-post修改出生地
-构造表单
+环境准备
+Pyqt5
+External Tools配置
+Pyinstall
+创建一个界面并打包
 总结
-修复方案
 
-01 注册账号
-这个漏洞的利用先决条件是已有用户，所以需要在站点上注册个用户先。
+01 环境准备
+我使用的是pycharm 2018.2版本，python版本3.6.4，大同小异啦，；pyqt5和pyinstall的安装配置在下文
 
-02 post修改出生地
-代码如下:
-1234#url/home.php?mod=spacecp&amp;ac=profile&amp;op=base#post databirthprovince=../../../test.txt&amp;profil...
+02 Pyqt5
+pip安装Pyqt5:
+12pip install PyQt5pip instal...
         </div>
         <div class="abstract-post-meta">
             <!-- date  -->
             <div class="abstract-date">
-                <span class="abstract-calander iconfont-archer">&#xe676;</span><span class="abstract-time">2017/11/22</span>
+                <span class="abstract-calander iconfont-archer">&#xe676;</span><span class="abstract-time">2018/11/13</span>
             </div>
             <!-- tags  -->
             
